@@ -1014,15 +1014,16 @@ pub(crate) async fn get_bridge_txs(
 			, tx_metadata.json						    AS c2m_metadata
 			, coalesce(sum(output_tokens.quantity), 0)  AS tokens_out
 			, native_token.id                           AS native_token_id
-		FROM tx_out         outputs
-		JOIN tx                               ON outputs.tx_id = tx.id
+		FROM tx_out
+		{address_join}
+		JOIN tx                               ON tx_out.tx_id = tx.id
 		JOIN block                            ON tx.block_id = block.id
-		JOIN ma_tx_out      output_tokens     ON output_tokens.tx_out_id = outputs.id
+		JOIN ma_tx_out      output_tokens     ON output_tokens.tx_out_id = tx_out.id
 		JOIN multi_asset    native_token      ON native_token.id = output_tokens.ident
 		LEFT JOIN           tx_metadata       ON tx_metadata.tx_id = tx.id AND tx_metadata.key = $5
 		WHERE native_token.policy = $2
           AND native_token.name = $3
-          AND outputs.address = $1
+          AND {address_column} = $1
           AND block_no <= $4
           AND {checkpoint_limit}
 		GROUP BY tx.id, tx.hash, tx_metadata.json, block.block_no, tx.block_index, native_token.id

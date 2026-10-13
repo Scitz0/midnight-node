@@ -15,6 +15,9 @@ Share index specifications between runtime and genesis manifests, retaining the
 Reject indexes whose required leading columns use a different collation from the underlying
 table columns, so schema verification does not accept indexes unusable by the queries.
 
+Use the selected address representation for bridge output queries as well as bridge inputs.
+The normalized-address bridge regression tests cover both transaction-input layouts.
+
 # Support configurable db-sync layouts and operator-managed indexes
 
 Partner Chains db-sync data sources now support both transaction-input representations (`tx_in`
